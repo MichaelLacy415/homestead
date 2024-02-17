@@ -2,9 +2,7 @@
 
 ## Database Schema Design
 
-![homestead]
-
-[Homestead_db]: ./images/Homestead.png
+[Homestead_db](./images/Homestead.png)
 
 ## API Documentation
 
