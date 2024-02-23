@@ -17,10 +17,18 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        reference: {
+          model: "User",
+          key: "id"
+        }
       },
       spotId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        reference: {
+          model: "Spot",
+          key: "id"
+        }
       },
       startDate: {
         type: Sequelize.DATE,
