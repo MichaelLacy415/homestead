@@ -46,11 +46,11 @@ module.exports = {
         description: "The Kingdom",
         price: 5000
       }
-    ], { validate: true });
+    ]);
   },
 
   async down (queryInterface, Sequelize) {
-    options.tableName = 'Spots';
+    options.tableName = 'spots';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
       ownerId: {[Op.in]: [1,2,3]}

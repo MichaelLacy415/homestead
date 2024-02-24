@@ -25,6 +25,11 @@ module.exports = {
           spotId: 3,
           url: "https://blog.ticketmaster.com/wp-content/uploads/AP_95090701875.jpg",
           preview: true
+        },
+        {
+          spotId: 3,
+          url: "",
+          preview: false
         }
       ])
   },
