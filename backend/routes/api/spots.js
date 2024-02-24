@@ -1,10 +1,8 @@
 const express = require('express');
-const { setTokenCookie, restoreUser, requireAuth} = require('../../utils/auth');
+const {requireAuth} = require('../../utils/auth');
 const { Spot, Review, Spotimage, User, Sequelize } = require('../../db/models');
 const router = express.Router();
 const {dateFormat} = require('./dateformat');
-const { where } = require('sequelize');
-const {handleValidationErrors} = require('../../utils/validation');
 const { validateSpot } = require('./middleware');
 
 router.get('/', async(req, res) => {
