@@ -1,5 +1,7 @@
+const { Spot, Review, Spotimage, User, Booking, Sequelize } = require('../../db/models');
 const { check } = require('express-validator');
-const { handleValidationErrors } = require('../../utils/validation');
+const { handleValidationErrors, handleBookingValidationErrors } = require('../../utils/validation');
+const { Op } = require('sequelize');
 module.exports = {
 
 validateSignup: [
@@ -8,16 +10,16 @@ validateSignup: [
       .isEmail()
       .withMessage('Please provide a valid email.'),
     check('email')
-    .custom(async value => {
-      const existingUser = await Users.findUserByEmail(value);
-      if (existingUser) {
-        throw new Error('E-mail already in use');
-        }
+      .custom(async value => {
+        const existingUser = await User.findUserByEmail(value);
+          if (existingUser) {
+            throw new Error('E-mail already in use');
+          }
       }),
-    check('username')
+    check('email')
       .exists({ checkFalsy: true })
-      .isLength({ min: 4 })
-      .withMessage('Please provide a username with at least 4 characters.'),
+      .isEmail()
+      .withMessage('Please provide a valid email.'),
     check('username')
       .not()
       .isEmail()
@@ -89,6 +91,46 @@ validateSpot: [
     .notEmpty()
     .withMessage("Price per day must be a positive number"),
     handleValidationErrors
-]
+],
+
+
+// validateBooking: [
+//   check('startDate')
+//     .custom(async (value, { req }) => {
+//       if (new Date(value) <= new Date()) {
+//         throw new Error('startDate cannot be in the past');
+//       }
+//       const existingStartDateBooking = await Booking.findOne({
+//         where: {
+//           startDate: {
+//             [Op.between]: [new Date(value), new Date(req.body.endDate)]
+//           }
+//         }
+//       });
+//       if (existingStartDateBooking) {
+//         throw new Error('Start date conflicts with an existing booking');
+//       }
+//       return true;
+//     }),
+//   check('endDate')
+//     .custom(async (value, { req }) => {
+//       if (new Date(value) <= new Date(req.body.startDate)) {
+//         throw new Error('endDate cannot be on or before startDate');
+//       }
+//       const existingEndDateBooking = await Booking.findOne({
+//         where: {
+//           endDate: {
+//             [Op.between]: [new Date(req.body.startDate), new Date(value)]
+//           }
+//         }
+//       });
+//       if (existingEndDateBooking) {
+//         throw new Error('End date conflicts with an existing booking');
+//       }
+//       return true;
+//     }),
+//   handleBookingValidationErrors
+// ],
+
 
 }
