@@ -14,25 +14,25 @@ module.exports = {
       {
         review: "this place is amazing",
         stars: 4,
-        userId: 1,
+        userId: 2,
         spotId: 1
       },
       {
         review: "place is horrible",
         stars: 1,
-        userId: 1,
+        userId: 3,
         spotId: 1
       },
       {
         review: "amazing",
         stars: 5,
-        userId: 2,
+        userId: 1,
         spotId: 2
       },
       {
         review: "Best place ive ever been too",
         stars: 4,
-        userId: 2,
+        userId: 3,
         spotId: 2
       },
       {
@@ -44,13 +44,13 @@ module.exports = {
       {
         review: "cant stand the chiefs",
         stars: 3,
-        userId: 3,
+        userId: 2,
         spotId: 3
       },
       {
-        review: "cant stand the chiefs",
-        stars: 3,
-        userId: 3,
+        review: "W",
+        stars: 5,
+        userId: 1,
         spotId: 3
       }
     ]);

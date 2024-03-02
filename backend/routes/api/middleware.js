@@ -94,43 +94,54 @@ validateSpot: [
 ],
 
 
-// validateBooking: [
-//   check('startDate')
-//     .custom(async (value, { req }) => {
-//       if (new Date(value) <= new Date()) {
-//         throw new Error('startDate cannot be in the past');
-//       }
-//       const existingStartDateBooking = await Booking.findOne({
-//         where: {
-//           startDate: {
-//             [Op.between]: [new Date(value), new Date(req.body.endDate)]
-//           }
-//         }
-//       });
-//       if (existingStartDateBooking) {
-//         throw new Error('Start date conflicts with an existing booking');
-//       }
-//       return true;
-//     }),
-//   check('endDate')
-//     .custom(async (value, { req }) => {
-//       if (new Date(value) <= new Date(req.body.startDate)) {
-//         throw new Error('endDate cannot be on or before startDate');
-//       }
-//       const existingEndDateBooking = await Booking.findOne({
-//         where: {
-//           endDate: {
-//             [Op.between]: [new Date(req.body.startDate), new Date(value)]
-//           }
-//         }
-//       });
-//       if (existingEndDateBooking) {
-//         throw new Error('End date conflicts with an existing booking');
-//       }
-//       return true;
-//     }),
-//   handleBookingValidationErrors
-// ],
+validateQuerryParams: [
+  check('startDate')
+    .custom(async (value, { req }) => {
+      if (new Date(value) <= new Date()) {
+        throw new Error('startDate cannot be in the past');
+      }
+      const existingStartDateBooking = await Booking.findOne({
+        where: {
+          startDate: {
+            [Op.between]: [new Date(value), new Date(req.body.endDate)]
+          }
+        }
+      });
+      if (existingStartDateBooking) {
+        throw new Error('Start date conflicts with an existing booking');
+      }
+      return true;
+    }),
+  check('endDate')
+    .custom(async (value, { req }) => {
+      if (new Date(value) <= new Date(req.body.startDate)) {
+        throw new Error('endDate cannot be on or before startDate');
+      }
+      const existingEndDateBooking = await Booking.findOne({
+        where: {
+          endDate: {
+            [Op.between]: [new Date(req.body.startDate), new Date(value)]
+          }
+        }
+      });
+      if (existingEndDateBooking) {
+        throw new Error('End date conflicts with an existing booking');
+      }
+      return true;
+    }),
+  handleBookingValidationErrors
+],
 
-
+validateReview: [
+    check('review')
+      .exists({checkFalsy: true})
+      .withMessage("Review text is required"),
+    check('stars')
+      .isInt({
+        min: 1,
+        max: 5
+      })
+      .withMessage("Stars must be an integer from 1 to 5"),
+      handleValidationErrors
+  ]
 }

@@ -1,9 +1,9 @@
 const express = require('express');
 const {requireAuth} = require('../../utils/auth');
-const { Spot, Review, Spotimage, User, Booking, Sequelize } = require('../../db/models');
+const { Spot, Review, Spotimage, User, Booking, Reviewimage, Sequelize } = require('../../db/models');
 const router = express.Router();
 const {dateFormat, bookingDateFormat} = require('./dateformat');
-const { validateSpot } = require('./middleware');
+const { validateSpot, validateReview } = require('./middleware');
 const { Op } = require('sequelize');
 
 
@@ -98,7 +98,6 @@ router.get('/current', requireAuth, async(req, res) => {
     });
 
   router.post('/', requireAuth, validateSpot, async(req, res) => {
-    try {
       const newSpot = await Spot.create({
         ownerId: req.user.id,
         address: req.body.address,
@@ -129,12 +128,6 @@ router.get('/current', requireAuth, async(req, res) => {
       }
 
       res.status(201).json(spotJSON);
-    } catch (err) {
-      console.error(err);
-      res.status(400).send({
-        message: 'Bad Request'
-      });
-    }
   });
 
 
@@ -349,5 +342,81 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
   res.status(200).json(bookingJSON);
 });
 
+router.get('/:spotId/reviews', async(req, res) => {
+  const {spotId} = req.params;
+
+  const spot = await Spot.findOne({ where: { id: spotId } });
+  if (!spot) {
+    return res.status(404).json({ message: "Spot couldn't be found" });
+  }
+
+  const reviews = await Review.findAll({
+    where: { spotId: spotId },
+    include: [
+      {
+        model: User,
+        attributes: ['id', 'firstName', 'lastName']
+      },
+      {
+        model: Reviewimage,
+        attributes: ['id', 'url']
+      }
+    ]
+  });
+
+  const reviewsJSON = reviews.map(review => ({
+    id: review.id,
+    userId: review.userId,
+    spotId: review.spotId,
+    review: review.review,
+    stars: review.stars,
+    createdAt: dateFormat(new Date(review.createdAt)),
+    updatedAt: dateFormat(new Date(review.updatedAt)),
+    User: {
+      id: review.User.id,
+      firstName: review.User.firstName,
+      lastName: review.User.lastName
+    },
+    ReviewImages: review.Reviewimages.map(image => ({
+      id: image.id,
+      url: image.url
+    }))
+  }));
+
+  res.status(200).json({ Reviews: reviewsJSON });
+});
+
+
+router.post('/:spotId/reviews', requireAuth, validateReview, async(req, res) => {
+  const {spotId} = req.params
+  const {stars, review} = req.body
+
+  const spot = await Spot.findOne({ where: { id: spotId } });
+  if (!spot) {
+    return res.status(404).json({ message: "Spot couldn't be found" });
+  }
+
+  const existingReview = await Review.findOne({ where: { userId: req.user.id, spotId: spotId } });
+  if (existingReview) {
+    return res.status(500).json({ message: "User already has a review for this spot" });
+  }
+  
+  const newReview = await Review.create ({
+    review,
+    stars
+  });
+
+  const reviewJSON = {
+    id: newReview.id,
+    userId: req.user.id,
+    spotId: Number(spotId),
+    review: newReview.review,
+    stars: Number(newReview.stars),
+    createdAt: dateFormat(new Date(newReview.createdAt)),
+    updatedAt: dateFormat(new Date(newReview.updatedAt))
+  }
+
+  res.status(200).json(reviewJSON)
+})
 
 module.exports = router;
