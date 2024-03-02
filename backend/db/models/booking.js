@@ -4,7 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Booking extends Model {
     static associate(models) {
-      Booking.belongsTo(models.User, {foreignKey: 'ownerId'});
+      Booking.belongsTo(models.User, {foreignKey: 'userId'});
       Booking.belongsTo(models.Spot, {foreignKey: 'spotId'})
     }
   };
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     endDate: {
       type: DataTypes.DATE,
       allowNull: false
-    }
+    },
   }, {
     sequelize,
     modelName: 'Booking',

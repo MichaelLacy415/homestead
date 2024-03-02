@@ -14,13 +14,25 @@ module.exports = {
       {
         review: "this place is amazing",
         stars: 4,
-        userId: 1,
+        userId: 2,
         spotId: 1
       },
       {
-        review: "Best place ive ever been too",
+        review: "place is horrible",
+        stars: 1,
+        userId: 3,
+        spotId: 1
+      },
+      {
+        review: "amazing",
         stars: 5,
-        userId: 2,
+        userId: 1,
+        spotId: 2
+      },
+      {
+        review: "Best place ive ever been too",
+        stars: 4,
+        userId: 3,
         spotId: 2
       },
       {
@@ -28,12 +40,24 @@ module.exports = {
         stars: 4,
         userId: 3,
         spotId: 3
+      },
+      {
+        review: "cant stand the chiefs",
+        stars: 3,
+        userId: 2,
+        spotId: 3
+      },
+      {
+        review: "W",
+        stars: 5,
+        userId: 1,
+        spotId: 3
       }
     ]);
   },
 
   async down (queryInterface, Sequelize) {
-    options.tableName = 'Reviews';
+    options.tableName = 'reviews';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
     }, {});
