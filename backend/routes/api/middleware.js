@@ -1,33 +1,28 @@
-const { Spot, Review, Spotimage, User, Booking, Sequelize } = require('../../db/models');
 const { check } = require('express-validator');
-const { handleValidationErrors, handleBookingValidationErrors } = require('../../utils/validation');
-const { Op } = require('sequelize');
+const { handleValidationErrors } = require('../../utils/validation');
+
+
+
+
 module.exports = {
+
+
 
 validateSignup: [
     check('email')
       .exists({ checkFalsy: true })
       .isEmail()
-      .withMessage('Please provide a valid email.'),
-    check('email')
-      .custom(async value => {
-        const existingUser = await User.findUserByEmail(value);
-          if (existingUser) {
-            throw new Error('E-mail already in use');
-          }
-      }),
-    check('email')
-      .exists({ checkFalsy: true })
-      .isEmail()
-      .withMessage('Please provide a valid email.'),
+      .withMessage("Invalid email"),
     check('username')
-      .not()
-      .isEmail()
-      .withMessage('Username cannot be an email.'),
-    check('password')
       .exists({ checkFalsy: true })
-      .isLength({ min: 6 })
-      .withMessage('Password must be 6 characters or more.'),
+      .isEmail()
+      .withMessage("Username is required"),
+    check('firstName')
+      .exists({ checkFalsy: true })
+      .withMessage("First Name is required"),
+    check('lastName')
+      .exists({ checkFalsy: true })
+      .withMessage("Last Name is required"),
     handleValidationErrors
   ],
 
@@ -36,23 +31,13 @@ validateLogin: [
     check('credential')
       .exists({ checkFalsy: true })
       .notEmpty()
-      .withMessage('Please provide a valid email or username.'),
+      .withMessage("Email or username is required"),
     check('password')
       .exists({ checkFalsy: true })
-      .withMessage('Please provide a password.'),
+      .withMessage("Password is required"),
     handleValidationErrors
   ],
 
-validateUser: [
-    check('credential')
-      .exists({ checkFalsy: true })
-      .notEmpty()
-      .withMessage('Please provide a valid email or username.'),
-    check('password')
-      .exists({ checkFalsy: true })
-      .withMessage('Please provide a password.'),
-    handleValidationErrors
-  ],
 
 validateSpot: [
   check('address')
@@ -87,49 +72,47 @@ validateSpot: [
     .withMessage("Description is required"),
   check('price')
     .exists({checkFalsy: true})
-    .isInt({min: 1})
+    .isFloat({min: 0})
     .notEmpty()
     .withMessage("Price per day must be a positive number"),
     handleValidationErrors
 ],
 
 
-validateQuerryParams: [
-  check('startDate')
-    .custom(async (value, { req }) => {
-      if (new Date(value) <= new Date()) {
-        throw new Error('startDate cannot be in the past');
-      }
-      const existingStartDateBooking = await Booking.findOne({
-        where: {
-          startDate: {
-            [Op.between]: [new Date(value), new Date(req.body.endDate)]
-          }
-        }
-      });
-      if (existingStartDateBooking) {
-        throw new Error('Start date conflicts with an existing booking');
-      }
-      return true;
-    }),
-  check('endDate')
-    .custom(async (value, { req }) => {
-      if (new Date(value) <= new Date(req.body.startDate)) {
-        throw new Error('endDate cannot be on or before startDate');
-      }
-      const existingEndDateBooking = await Booking.findOne({
-        where: {
-          endDate: {
-            [Op.between]: [new Date(req.body.startDate), new Date(value)]
-          }
-        }
-      });
-      if (existingEndDateBooking) {
-        throw new Error('End date conflicts with an existing booking');
-      }
-      return true;
-    }),
-  handleBookingValidationErrors
+validateQueryParams: [
+    check('page')
+      .optional()
+      .isInt({gt: 0})
+      .withMessage("Page must be greater than or equal to 1"),
+    check('size')
+      .optional()
+      .isInt({gt: 0})
+      .withMessage("Size must be greater than or equal to 1"),
+    check('maxLat')
+      .optional()
+      .isFloat({min: -90, max: 90})
+      .withMessage("Maximum latitude is invalid"),
+    check('minLat')
+      .optional()
+      .isFloat({min: -90, max: 90})
+      .withMessage("Minimum latitude is invalid"),
+    check('minLng')
+      .optional()
+      .isFloat({min: -180, max: 180})
+      .withMessage("Minimum longitude is invalid"),
+    check('maxLng')
+      .optional()
+      .isFloat({min: -180, max: 180})
+      .withMessage("Maximum longitude is invalid"),
+    check('minPrice')
+      .optional()
+      .isFloat({min: 0})
+      .withMessage("Minimum price must be greater than or equal to 0"),
+    check('maxPrice')
+      .optional()
+      .isFloat({min: 0})
+      .withMessage("Maximum price must be greater than or equal to 0"),
+      handleValidationErrors
 ],
 
 validateReview: [

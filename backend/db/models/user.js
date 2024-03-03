@@ -8,6 +8,16 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Booking, {foreignKey: 'userId'});
       User.hasMany(models.Review, {foreignKey: 'userId'})
     }
+
+    static async checkEmailExists(email) {
+      const user = await this.findOne({ where: { email } });
+      return Boolean(user);
+    }
+
+    static async checkUsernameExists(username){
+      const user = await this.findOne({ where: { username } });
+      return Boolean(user)
+    }
   };
 
   User.init(

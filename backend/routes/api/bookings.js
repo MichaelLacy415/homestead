@@ -50,7 +50,7 @@ router.delete('/:bookingId', requireAuth, async (req, res) => {
         if (booking.userId !== req.user.id) {
             const spot = await Spot.findOne({ where: { id: booking.spotId } });
             if (!spot || spot.ownerId !== req.user.id) {
-                return res.status(403).json({ message: "Unauthorized" });
+                return res.status(403).json({ message: "Forbidden" });
             }
         }
 
@@ -70,7 +70,12 @@ router.put('/:bookingId', requireAuth, async(req, res) => {
   const {startDate, endDate} = req.body;
 
     // Fetch the booking
-    const booking = await Booking.findByPk(bookingId);
+    const booking = await Booking.findOne({ where: { id: bookingId } });
+
+    if (booking.userId !== req.user.id) {
+          return res.status(403).json({ message: "Forbidden" });
+      }
+  
 
     // Check if the booking exists
     if (!booking) {
