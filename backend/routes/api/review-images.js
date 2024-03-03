@@ -16,7 +16,7 @@ router.delete('/:imageId', requireAuth, async (req, res) => {
             return res.status(404).json({ message: "Review image couldn't be found" });
         }
 
-        if (reviewImage.Spot.ownerId !== req.user.id) {
+        if (reviewImage.Review.userId !== req.user.id) {
             return res.status(403).json({ message: "Forbidden" });
         }
 
@@ -25,3 +25,5 @@ router.delete('/:imageId', requireAuth, async (req, res) => {
 
         res.status(200).json({ message: "Successfully deleted" });
 });
+
+module.exports = router;

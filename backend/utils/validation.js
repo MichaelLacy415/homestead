@@ -21,8 +21,16 @@ const handleValidationErrors = (req, _res, next) => {
   next();
 };
 
+const checkEmailExists = function(email){
+    
+}
+
+const checkUsernameExists = function(username){
+
+}
+
 
 module.exports = {
-  handleValidationErrors
+  handleValidationErrors, checkEmailExists, checkUsernameExists
 };
 
