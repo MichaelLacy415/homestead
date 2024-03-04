@@ -26,11 +26,11 @@ module.exports = {
       spotId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        // references: {
-        //   model: 'Spots',
-        //   key: 'id'
-        // },
-        // onDelete: 'CASCADE'
+        references: {
+          model: 'Spots',
+          key: 'id'
+        },
+        onDelete: 'CASCADE'
       },
       startDate: {
         type: Sequelize.DATE,
