@@ -35,7 +35,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    options.tableName = 'spotimages';
+    options.tableName = 'Spotimages';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
     }, {});

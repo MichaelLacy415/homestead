@@ -74,17 +74,16 @@ router.post('/:reviewId/images', requireAuth, async(req, res) => {
         include: [Reviewimage]
     });
 
-    if(review.userId !== req.user.Id){
-      return res.status(403).json({message: "Forbidden"})
-    }
-
-
     if (!review) {
       return res.status(404).json({
         message: "Review couldn't be found"
       });
     }
-    
+
+    if(review.userId !== req.user.id){
+      return res.status(403).json({message: "Forbidden"})
+    }
+
     if (review.Reviewimages && review.Reviewimages.length >= 10) {
       return res.status(403).json({
         message: "Maximum number of images for this resource was reached"
