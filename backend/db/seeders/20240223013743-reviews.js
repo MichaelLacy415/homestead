@@ -53,7 +53,7 @@ module.exports = {
         userId: 1,
         spotId: 3
       }
-    ]);
+    ], {});
   },
 
   async down (queryInterface, Sequelize) {

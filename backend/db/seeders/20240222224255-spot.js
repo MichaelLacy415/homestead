@@ -46,7 +46,7 @@ module.exports = {
         description: "The Kingdom",
         price: 5000
       }
-    ]);
+    ], {});
   },
 
   async down (queryInterface, Sequelize) {

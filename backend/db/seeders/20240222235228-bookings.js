@@ -29,7 +29,7 @@ module.exports = {
         startDate: new Date('2024-05-22'),
         endDate: new Date('2024-05-25')
       }
-    ])
+    ], {});
   },
 
   async down (queryInterface, Sequelize) {
