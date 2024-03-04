@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         reference: {
-          model: 'Review',
+          model: 'reviews',
           key: 'id'
         }
       },
@@ -36,7 +36,7 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    });
+    }, options);
   },
   async down(queryInterface, Sequelize) {
     options.tableName = "reviewimages";

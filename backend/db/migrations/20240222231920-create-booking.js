@@ -17,16 +17,16 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        reference: {
-          model: "User",
+        references: {
+          model: "users",
           key: "id"
         }
       },
       spotId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        reference: {
-          model: "Spot",
+        references: {
+          model: "spots",
           key: "id"
         }
       },
