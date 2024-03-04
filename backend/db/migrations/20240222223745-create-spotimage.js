@@ -15,7 +15,7 @@ module.exports = {
       spotId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Spot",
+          model: "spots",
           key: "id"
         }
       },

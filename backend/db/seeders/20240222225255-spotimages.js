@@ -38,7 +38,6 @@ module.exports = {
     options.tableName = 'spotimages';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
-      
     }, {});
   }
 };
