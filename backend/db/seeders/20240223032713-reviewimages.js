@@ -22,7 +22,7 @@ module.exports = {
         reviewId: 5,
         url: "https://blog.ticketmaster.com/wp-content/uploads/AP_95090701875.jpg"
       }
-    ])
+    ], {});
   },
 
   async down (queryInterface, Sequelize) {
