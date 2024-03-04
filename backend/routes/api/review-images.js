@@ -12,7 +12,7 @@ router.delete('/:imageId', requireAuth, async (req, res) => {
         include: Review
     });
 
-        if (!reviewImage) {
+        if (!reviewImage || imageId === null) {
             return res.status(404).json({ message: "Review image couldn't be found" });
         }
 
