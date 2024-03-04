@@ -29,7 +29,7 @@ module.exports = {
           model: 'Users',
           key: 'id'
         },
-        onDelete: 'cascade'
+        onDelete: 'CASCADE'
       },
       spotId: {
         type: Sequelize.INTEGER,
@@ -38,7 +38,7 @@ module.exports = {
           model: 'Spots',
           key: 'id'
         },
-        onDelete: 'cascade'
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,
