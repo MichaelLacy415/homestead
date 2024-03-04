@@ -72,18 +72,18 @@ router.put('/:bookingId', requireAuth, async(req, res) => {
     // Fetch the booking
     const booking = await Booking.findOne({ where: { id: bookingId } });
 
-    if (booking.userId !== req.user.id) {
-          return res.status(403).json({ message: "Forbidden" });
-      }
-  
-
     // Check if the booking exists
     if (!booking) {
       return res.status(404).json({ message: "Booking couldn't be found" });
     }
 
+
+    if (booking.userId !== req.user.id) {
+          return res.status(403).json({ message: "Forbidden" });
+      }
+
     // Validate the request data
-    if (new Date(startDate) < new Date()) {
+    if (new Date(startDate) <= Date.now()) {
       return res.status(400).json({
         message: "Bad Request",
         errors: {
@@ -93,7 +93,7 @@ router.put('/:bookingId', requireAuth, async(req, res) => {
       });
     }
   
-    if (endDate < startDate) {
+    if (endDate <= startDate) {
       return res.status(400).json({
         message: "Bad Request",
         errors: {
@@ -111,9 +111,30 @@ router.put('/:bookingId', requireAuth, async(req, res) => {
     // Check if the new dates conflict with an existing booking
     const conflictingBooking = await Booking.findOne({
       where: {
-        id: { [Op.ne]: bookingId },
-        startDate: { [Op.lte]: req.body.endDate },
-        endDate: { [Op.gte]: req.body.startDate }
+        id: {
+          [Op.ne]: bookingId  // Exclude the current booking
+        },
+        spotId: booking.spotId,
+        [Op.or]: [
+          {
+            startDate: {
+              [Op.between]: [new Date(startDate), new Date(endDate)]
+            }
+          },
+          {
+            endDate: {
+              [Op.between]: [new Date(startDate), new Date(endDate)]
+            }
+          },
+          {
+            startDate: {
+              [Op.lte]: new Date(startDate)
+            },
+            endDate: {
+              [Op.gte]: new Date(endDate)
+            }
+          }
+        ]
       }
     });
 

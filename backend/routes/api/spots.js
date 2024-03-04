@@ -252,7 +252,8 @@ router.get('/:spotId/bookings', requireAuth, async(req, res) => {
     for (const booking of userBookings) {
         const spot = await Spot.findOne({ where: { id: spotId } });
         const user = await User.findOne({ where: { id: spot.ownerId } });
-      if(spot.ownerId !== req.user.id){
+        
+      if(spot.ownerId === req.user.id){
         const bookingJSON = {
                 User: {
                     id: user.id,
@@ -269,7 +270,17 @@ router.get('/:spotId/bookings', requireAuth, async(req, res) => {
             };
             formattedBookings.push(bookingJSON);
           }
+
+      if(spot.ownerId !== req.user.id){
+          const bookingJSON = {
+            spotId: booking.spotId,
+            startDate: bookingDateFormat(booking.startDate),
+            endDate: bookingDateFormat(booking.endDate)
+          }
+          formattedBookings.push(bookingJSON);
+        }
     }
+
     if (!formattedBookings.length) {
       return res.status(404).json({ message: "Spot couldn't be found" });
     }
@@ -288,13 +299,13 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     return res.status(404).json({ message: "Spot couldn't be found" });
   }
 
-  if(spot.ownerId !== req.user.id){
+  if(spot.ownerId === req.user.id){
     return res.status(403).json({message: "Forbidden"})
   }
   
 
    // Validate the request data
-      if (new Date(startDate) < new Date()) {
+      if (new Date(startDate) <= new Date()) {
         return res.status(400).json({
           message: "Bad Request",
           errors: {
@@ -304,7 +315,7 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
         });
       }
 
-      if (endDate < startDate) {
+      if (endDate <= startDate) {
         return res.status(400).json({
           message: "Bad Request",
           errors: {
@@ -314,12 +325,31 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
         });
       }
 
-  const conflictingBooking = await Booking.findOne({
-    where: {
-      startDate: { [Op.lte]: endDate },
-      endDate: { [Op.gte]: startDate }
-    }
-  });
+    const conflictingBooking = await Booking.findOne({
+      where: {
+        spotId: spotId,
+        [Op.or]: [
+          {
+            startDate: {
+              [Op.between]: [new Date(startDate), new Date(endDate)]
+            }
+          },
+          {
+            endDate: {
+              [Op.between]: [new Date(startDate), new Date(endDate)]
+            }
+          },
+          {
+            startDate: {
+              [Op.lte]: new Date(startDate)
+            },
+            endDate: {
+              [Op.gte]: new Date(endDate)
+            }
+          }
+        ]
+      }
+    });
 
       if (conflictingBooking) {
         return res.status(403).json({
@@ -399,8 +429,8 @@ router.get('/:spotId/reviews', async(req, res) => {
 
 
 router.post('/:spotId/reviews', requireAuth, validateReview, async(req, res) => {
-  const {spotId} = req.params
-  const {stars, review} = req.body
+  const {spotId} = req.params;
+  const {stars, review} = req.body;
 
   const spot = await Spot.findOne({ where: { id: spotId } });
   if (!spot) {
@@ -413,16 +443,18 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async(req, res) => 
   }
   
   const newReview = await Review.create ({
-    review,
-    stars
+    review: review,
+    stars: stars,
+    userId: req.user.id,
+    spotId: Number(spotId)
   });
 
   const reviewJSON = {
     id: newReview.id,
-    userId: req.user.id,
-    spotId: Number(spotId),
+    userId: newReview.userId,
+    spotId: newReview.spotId,
     review: newReview.review,
-    stars: Number(newReview.stars),
+    stars: newReview.stars,
     createdAt: dateFormat(new Date(newReview.createdAt)),
     updatedAt: dateFormat(new Date(newReview.updatedAt))
   }

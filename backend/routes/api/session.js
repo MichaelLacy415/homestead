@@ -3,17 +3,14 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
-const { validateLogin } = require('../../utils/validation');
+const { validateLogin } = require('./middleware');
 const router = express.Router();
 
 
 
   
 // Log in
-router.post(
-    '/',
-    validateLogin,
-    async (req, res, next) => {
+router.post('/', validateLogin, async (req, res, next) => {
       const { credential, password } = req.body;
   
       const user = await User.unscoped().findOne({
@@ -24,16 +21,11 @@ router.post(
           }
         }
       });
-
-      if(!user){
-        return res.status(401).json({message: "Invalid credentials"})
-      }
   
       if (!user || !bcrypt.compareSync(password, user.hashedPassword.toString())) {
-        const err = new Error('Login failed');
+        const err = new Error('Invalid credentials');
         err.status = 401;
-        err.title = 'Login failed';
-        err.errors = { credential: 'The provided credentials were invalid.' };
+        // err.errors = { message: 'Invalid credentials' };
         return next(err);
       }
   
@@ -50,8 +42,7 @@ router.post(
       return res.json({
         user: safeUser
       });
-    }
-  );
+    });
 
   // Log out
 router.delete(

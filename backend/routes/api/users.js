@@ -28,8 +28,7 @@ const router = express.Router();
 //   ];
   
 
-router.post('/', validateSignup, async (req, res, next) => {
-  try {
+router.post('/', validateSignup, async (req, res) => {
     const { email, password, username, firstName, lastName } = req.body;
     const hashedPassword = bcrypt.hashSync(password);
 
@@ -62,9 +61,6 @@ router.post('/', validateSignup, async (req, res, next) => {
     return res.json({
       user: safeUser
     });
-  } catch (err) {
-    next(err);
-  }
 });
 
 router.use((err, req, res, next) => {

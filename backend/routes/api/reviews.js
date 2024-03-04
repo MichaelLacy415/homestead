@@ -3,14 +3,13 @@ const {requireAuth} = require('../../utils/auth');
 const { Spot, Review, Spotimage, User, Booking, Reviewimage, Sequelize } = require('../../db/models');
 const router = express.Router();
 const {dateFormat, bookingDateFormat} = require('./dateformat');
-// const { Op } = require('sequelize');
+const {validateReview} = require('./middleware')
 
 
 
-router.get('/current', requireAuth, async(req, res) => {
-    const userId = req.user.id; 
+router.get('/current', requireAuth, async(req, res) => { 
     const reviews = await Review.findAll({
-        where: { userId: userId },
+        where: { userId: req.user.id },
         include: [
             {
                 model: User,
@@ -75,6 +74,11 @@ router.post('/:reviewId/images', requireAuth, async(req, res) => {
         include: [Reviewimage]
     });
 
+    if(review.userId !== req.user.Id){
+      return res.status(403).json({message: "Forbidden"})
+    }
+
+
     if (!review) {
       return res.status(404).json({
         message: "Review couldn't be found"
@@ -100,7 +104,7 @@ router.post('/:reviewId/images', requireAuth, async(req, res) => {
     res.status(200).json(newImageJSON);
 })
 
-router.put('/:reviewId', requireAuth, async(req, res) => {
+router.put('/:reviewId', requireAuth, validateReview, async(req, res) => {
     const { reviewId } = req.params;
     const { review, stars } = req.body;
     const currentReview = await Review.findOne({ where: { id: Number(reviewId) } });
@@ -110,7 +114,7 @@ router.put('/:reviewId', requireAuth, async(req, res) => {
       return res.status(404).json({ message: "Review couldn't be found" });
     }
 
-    if (review.userId !== req.user.id) {
+    if (currentReview.userId !== req.user.id) {
         return res.status(403).json({
           message: "Forbidden"
         });

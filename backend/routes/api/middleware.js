@@ -15,7 +15,6 @@ validateSignup: [
       .withMessage("Invalid email"),
     check('username')
       .exists({ checkFalsy: true })
-      .isEmail()
       .withMessage("Username is required"),
     check('firstName')
       .exists({ checkFalsy: true })
@@ -64,16 +63,13 @@ validateSpot: [
     .withMessage("Longitude must be within -180 and 180"),
   check('name')
     .isLength({max: 50})
-    .notEmpty()
     .withMessage("Name must be less than 50 characters"),
   check('description')
     .exists({checkFalsy: true})
-    .notEmpty()
     .withMessage("Description is required"),
   check('price')
     .exists({checkFalsy: true})
     .isFloat({min: 0})
-    .notEmpty()
     .withMessage("Price per day must be a positive number"),
     handleValidationErrors
 ],
