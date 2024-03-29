@@ -8,19 +8,24 @@ const { Op } = require('sequelize');
 
 
 router.get('/', validateQueryParams, async(req, res) => {
-  const page = Number(req.query.page) || 1;
-  const size = Number(req.query.size) || 20;
-  const minLat = req.query.minLat;
-  const maxLat = req.query.maxLat;
-  const minLng = req.query.minLng;
-  const maxLng = req.query.maxLng;
-  const minPrice = req.query.minPrice;
-  const maxPrice = req.query.maxPrice;
+  let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+
+  if (page === "" || isNaN(page)) {
+    page = 1;
+    page = Number(page);
+  }
+  if (page > 10) {
+    page = 10;
+  }
+  if (size === "" || size > 20 || isNaN(size)) {
+    size = 20;
+    size = Number(size);
+  }
 
   const offset = (page - 1) * size;
   const limit = size;
-
   const where = {};
+
   if (minLat) where.lat = { [Op.gte]: minLat };
   if (maxLat) where.lat = { ...where.lat, [Op.lte]: maxLat };
   if (minLng) where.lng = { [Op.gte]: minLng };
@@ -30,6 +35,7 @@ router.get('/', validateQueryParams, async(req, res) => {
 
   
   const spots = await Spot.findAll({where, offset, limit});
+
   const formattedSpots = [];
   
   for (const spot of spots) {
