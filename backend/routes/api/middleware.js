@@ -82,8 +82,8 @@ validateQueryParams: [
       .withMessage("Page must be greater than or equal to 1"),
     check('size')
       .optional()
-      .isInt({gt: 0})
-      .withMessage("Size must be greater than or equal to 1"),
+      .isInt({gt: 0, lt: 21})
+      .withMessage("Size must be between 1 and 20"),
     check('maxLat')
       .optional()
       .isFloat({min: -90, max: 90})
