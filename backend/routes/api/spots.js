@@ -14,9 +14,9 @@ router.get('/', validateQueryParams, async(req, res) => {
     page = 1;
     page = Number(page);
   }
-  if (page > 10) {
-    page = 10;
-  }
+  // if (page > 10) {
+  //   page = 10;
+  // }
   if (size === "" || size > 20 || isNaN(size)) {
     size = 20;
     size = Number(size);
