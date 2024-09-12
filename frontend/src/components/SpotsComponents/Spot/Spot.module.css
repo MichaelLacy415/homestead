@@ -1,0 +1,141 @@
+.spot_page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .spot_container {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    min-width: 1000px;
+  }
+  
+  .images_container {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 500px;
+  
+    .preview_image_container {
+      width: 50%;
+      height: 70vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  
+      .preview_image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        box-sizing: border-box;
+        padding: 5px;
+      }
+    }
+  
+    .right_images_container {
+      display: flex;
+      flex-wrap: wrap;
+  
+      width: 50%;
+      height: 70vh;
+  
+      .right_image_container {
+        width: 50%;
+        height: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+  
+        .right_image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          box-sizing: border-box;
+          padding: 5px;
+        }
+      }
+    }
+  }
+  
+  .bottom_bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 0px;
+    border-bottom: 2px solid black;
+  
+    .reserve_container {
+      display: flex;
+      flex-direction: column;
+      width: 400px;
+      height: min-content;
+      border: 4px solid black;
+      border-radius: 10px;
+  
+      .reserve_container_top {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px;
+        .price_info {
+          .price_text {
+            font-weight: bold;
+            font-size: 18px;
+          }
+        }
+  
+        .review_info {
+          display: flex;
+        }
+      }
+  
+      .reserve_container_bottom {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+  
+        .reserve_button {
+          width: 100%;
+          margin-left: 20px;
+          margin-right: 20px;
+          margin-bottom: 20px;
+          height: 40px;
+          background-color: rgba(253, 253, 253, 0.212);
+          color: white;
+          border: 2px solid black;
+          border-radius: 2px;
+          &:hover {
+            box-shadow: 2px 2px black;
+            background-color: rgba(253, 253, 253, 0.212);
+          }
+        }
+      }
+    }
+  }
+  
+  .reviews_section {
+    .user_review {
+      border-top: 2px solid rgb(208, 208, 208);
+      border-bottom: 2px solid rgb(208, 208, 208);
+    }
+  
+    .user_review,
+    .review {
+      margin: 30px 0px;
+  
+      .stars,
+      .reviewer_name,
+      .review_date,
+      .review_text {
+        padding: 7px 0px;
+      }
+  
+      .reviewer_name {
+        font-size: 20px;
+        font-weight: bold;
+      }
+  
+      .review_date {
+        color: gray;
+      }
+    }
+  }

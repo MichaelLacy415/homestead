@@ -1,46 +1,59 @@
-import { csrfFetch } from './csrf';
+import { csrfFetch } from "./csrf";
 
 const SET_USER = "session/setUser";
 const REMOVE_USER = "session/removeUser";
+const LOAD_USER_SPOTS = "session/LOAD_USER_SPOTS";
 
 const setUser = (user) => {
   return {
     type: SET_USER,
-    payload: user
+    payload: user,
   };
 };
 
 const removeUser = () => {
   return {
-    type: REMOVE_USER
+    type: REMOVE_USER,
   };
 };
 
+const loadUserSpots = (spots) => {
+  return { type: LOAD_USER_SPOTS, spots };
+};
+
+
+
+export const loadUserSpotsThunk = () => async (dispatch) => {
+  const jsonResponse = await csrfFetch("/api/spots/current");
+
+  const { Spots } = await jsonResponse.json();
+
+  if (jsonResponse.ok) {
+    dispatch(loadUserSpots(Spots));
+  }
+};
+
+
 export const login = (user) => async (dispatch) => {
   const { credential, password } = user;
-  const response = await csrfFetch("/api/session", {
+  const jsonResponse = await csrfFetch("/api/session", {
     method: "POST",
     body: JSON.stringify({
       credential,
-      password
-    })
+      password,
+    }),
   });
-  const data = await response.json();
+  const data = await jsonResponse.json();
   dispatch(setUser(data.user));
-  return response;
+  return data;
 };
 
-const initialState = { user: null };
-
-const sessionReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case SET_USER:
-      return { ...state, user: action.payload };
-    case REMOVE_USER:
-      return { ...state, user: null };
-    default:
-      return state;
-  }
+export const logout = () => async (dispatch) => {
+  const response = await csrfFetch("/api/session", {
+    method: "DELETE",
+  });
+  dispatch(removeUser());
+  return response;
 };
 
 export const restoreUser = () => async (dispatch) => {
@@ -59,21 +72,44 @@ export const signup = (user) => async (dispatch) => {
       firstName,
       lastName,
       email,
-      password
-    })
+      password,
+    }),
   });
   const data = await response.json();
-  dispatch(setUser(data.user));
+  console.log(data)
+  if (!data.errors) {
+    dispatch(setUser(data.user));
+  }
+  return data;
+};
+
+export const deleteSpotThunk = (spotId) => async (dispatch) => {
+  const jsonResponse = await csrfFetch(`/api/spots/${spotId}`, {
+    method: "DELETE",
+  });
+
+  const response = await jsonResponse.json();
+
+  dispatch(loadUserSpotsThunk());
+
   return response;
 };
 
 
-export const logout = () => async (dispatch) => {
-  const response = await csrfFetch('/api/session', {
-    method: 'DELETE'
-  });
-  dispatch(removeUser());
-  return response;
+const initialState = { user: null, userSpots: [], userReviews: [] };
+
+const sessionReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case SET_USER:
+      return { ...state, user: action.payload };
+    case REMOVE_USER:
+      return { ...state, user: null, userSpots: [] };
+    case LOAD_USER_SPOTS: {
+      return { ...state, userSpots: action.spots };
+    }
+    default:
+      return state;
+  }
 };
 
 export default sessionReducer;
