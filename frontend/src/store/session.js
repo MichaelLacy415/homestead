@@ -1,8 +1,11 @@
 import { csrfFetch } from "./csrf";
+import { getSpotReviewsThunk } from "./reviews";
+import { getSpecificSpotThunk } from "./spots";
 
 const SET_USER = "session/setUser";
 const REMOVE_USER = "session/removeUser";
 const LOAD_USER_SPOTS = "session/LOAD_USER_SPOTS";
+const LOAD_USER_REVIEWS = "session/LOAD_USER_REVIEWS";
 
 const setUser = (user) => {
   return {
@@ -21,7 +24,11 @@ const loadUserSpots = (spots) => {
   return { type: LOAD_USER_SPOTS, spots };
 };
 
+const loadUserReviews = (reviews) => {
+  return { type: LOAD_USER_REVIEWS, reviews };
+};
 
+//////////////////////////////////////////////////////////////////
 
 export const loadUserSpotsThunk = () => async (dispatch) => {
   const jsonResponse = await csrfFetch("/api/spots/current");
@@ -33,6 +40,15 @@ export const loadUserSpotsThunk = () => async (dispatch) => {
   }
 };
 
+export const loadUserReviewsThunk = () => async (dispatch) => {
+  const jsonResponse = await csrfFetch("/api/reviews/current");
+
+  const { Reviews } = await jsonResponse.json();
+
+  if (jsonResponse.ok) {
+    dispatch(loadUserReviews(Reviews));
+  }
+};
 
 export const login = (user) => async (dispatch) => {
   const { credential, password } = user;
@@ -95,6 +111,22 @@ export const deleteSpotThunk = (spotId) => async (dispatch) => {
   return response;
 };
 
+export const deleteReviewThunk = (reviewId, spotId) => async (dispatch) => {
+  const jsonResponse = await csrfFetch(`/api/reviews/${reviewId}`, {
+    method: "DELETE",
+  });
+
+  const response = await jsonResponse.json();
+
+  if (response.message !== "Bad Request") {
+    dispatch(getSpotReviewsThunk(spotId));
+    dispatch(getSpecificSpotThunk(spotId));
+  }
+
+  return response;
+};
+
+//////////////////////////////////////////////////////////////////
 
 const initialState = { user: null, userSpots: [], userReviews: [] };
 
@@ -106,6 +138,9 @@ const sessionReducer = (state = initialState, action) => {
       return { ...state, user: null, userSpots: [] };
     case LOAD_USER_SPOTS: {
       return { ...state, userSpots: action.spots };
+    }
+    case LOAD_USER_REVIEWS: {
+      return { ...state, userReviews: action.reviews };
     }
     default:
       return state;

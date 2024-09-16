@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { FaHubspot } from "react-icons/fa";
 import ProfileButton from "./ProfileButton";
 import s from "./Navigation.module.css";
 
@@ -17,8 +16,7 @@ function Navigation({ isLoaded }) {
           navigate("/");
         }}
       >
-        <FaHubspot />
-        Spots
+        HomeStead
       </div>
       <div className={s.right}>
         {sessionUser && (

@@ -35,7 +35,7 @@ function LoginFormModal() {
     e.preventDefault();
 
     return dispatch(
-      sessionActions.login({ credential: "BigOwner1", password: "password" })
+      sessionActions.login({ credential: "DemoProfile", password: "password" })
     ).then(closeModal);
   };
 
