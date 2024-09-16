@@ -1,22 +1,42 @@
-import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import ProfileButton from './ProfileButton';
-import './Navigation.css';
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import ProfileButton from "./ProfileButton";
+import s from "./Navigation.module.css";
 
 function Navigation({ isLoaded }) {
-  const sessionUser = useSelector(state => state.session.user);
+  const sessionUser = useSelector((state) => state.session.user);
+  const navigate = useNavigate();
 
   return (
-    <ul>
-      <li>
-        <NavLink to="/">Home</NavLink>
-      </li>
-      {isLoaded && (
-        <li>
-          <ProfileButton user={sessionUser} />
-        </li>
-      )}
-    </ul>
+    <nav className={s.nav_bar}>
+      <div
+        className={s.home_icon}
+        onClick={(e) => {
+          e.preventDefault();
+          navigate("/");
+        }}
+      >
+        HomeStead
+      </div>
+      <div className={s.right}>
+        {sessionUser && (
+          <button
+            className={s.create_spot_button}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/spots/new");
+            }}
+          >
+            Create a New Spot
+          </button>
+        )}
+        {isLoaded && (
+          <div className={s.profile_button_container}>
+            <ProfileButton user={sessionUser} />
+          </div>
+        )}
+      </div>
+    </nav>
   );
 }
 

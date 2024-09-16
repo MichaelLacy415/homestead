@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useModal } from '../../context/Modal';
-import * as sessionActions from '../../store/session';
-import './SignupFormPage.css';
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useModal } from "../../context/Modal";
+import * as sessionActions from "../../store/session";
+import s from "./SignupFormModal.module.css";
 
 function SignupFormModal() {
   const dispatch = useDispatch();
@@ -25,10 +25,16 @@ function SignupFormModal() {
           username,
           firstName,
           lastName,
-          password
+          password,
         })
       )
-        .then(closeModal)
+        .then((res) => {
+          if (res.errors) {
+            setErrors(res.errors);
+          } else {
+            closeModal();
+          }
+        })
         .catch(async (res) => {
           const data = await res.json();
           if (data?.errors) {
@@ -37,79 +43,90 @@ function SignupFormModal() {
         });
     }
     return setErrors({
-      confirmPassword: "Confirm Password field must be the same as the Password field"
+      confirmPassword:
+        "Confirm Password field must be the same as the Password field",
     });
   };
 
+  const enableButton = () => {
+    return !(
+      email &&
+      username.length >= 4 &&
+      password.length >= 6 &&
+      firstName &&
+      lastName &&
+      password &&
+      confirmPassword
+    );
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit} className={s.form}>
       <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Email
-          <input
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </label>
-        {errors.email && <p>{errors.email}</p>}
-        <label>
-          Username
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </label>
-        {errors.username && <p>{errors.username}</p>}
-        <label>
-          First Name
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </label>
-        {errors.firstName && <p>{errors.firstName}</p>}
-        <label>
-          Last Name
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </label>
-        {errors.lastName && <p>{errors.lastName}</p>}
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-        {errors.password && <p>{errors.password}</p>}
-        <label>
-          Confirm Password
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </label>
-        {errors.confirmPassword && (
-          <p>{errors.confirmPassword}</p>
-        )}
-        <button type="submit">Sign Up</button>
-      </form>
-    </>
+
+      <input
+        type="text"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        required
+      />
+
+      {errors.email && <span className={s.error}>{errors.email}</span>}
+
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+        required
+      />
+
+      {errors.username && <span>{errors.username}</span>}
+
+      <input
+        type="text"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        placeholder="First Name"
+        required
+      />
+
+      {errors.firstName && <span>{errors.firstName}</span>}
+
+      <input
+        type="text"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        placeholder="Last Name"
+        required
+      />
+
+      {errors.lastName && <span>{errors.lastName}</span>}
+
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+      />
+
+      {errors.password && <span>{errors.password}</span>}
+
+      <input
+        type="password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        placeholder="Confirm Password"
+        required
+      />
+
+      {errors.confirmPassword && <span>{errors.confirmPassword}</span>}
+      <button type="submit" disabled={enableButton()}>
+        Sign Up
+      </button>
+    </form>
   );
 }
 
